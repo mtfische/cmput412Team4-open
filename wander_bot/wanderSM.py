@@ -44,7 +44,7 @@ class Drive(smach.State):
     rospy.sleep(.1)
     rospy.loginfo('Executing state Drive')
 
-    if (g_range_ahead < 0.7 or rospy.Time.now() > userdata.drive_interupt_time):
+    if (g_range_ahead < 0.5 or rospy.Time.now() > userdata.drive_interupt_time):
       rospy.loginfo('Stop driving')
       userdata.state_interupt_out = rospy.Time.now() + rospy.Duration(3)
       return 'stop_drive'

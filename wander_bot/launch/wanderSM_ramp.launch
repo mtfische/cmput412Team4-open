@@ -1,0 +1,5 @@
+<launch>
+  <node name="wanderSM_ramp" pkg="wander_bot" type="wanderSM_ramp.py">
+    <remap from="cmd_vel" to="cmd_vel_mux/input/teleop" />
+  </node>
+</launch>
