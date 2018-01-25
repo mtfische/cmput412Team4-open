@@ -46,11 +46,11 @@ class Drive(smach.State):
 
     if (g_range_ahead < 0.7 or rospy.Time.now() > userdata.drive_interupt_time):
       rospy.loginfo('Stop driving')
-      userdata.state_interupt_out = rospy.Time.now() + rospy.Duration(5)
+      userdata.state_interupt_out = rospy.Time.now() + rospy.Duration(3)
       return 'stop_drive'
     else:
       twist = Twist()
-      twist.linear.x = 0.5
+      twist.linear.x = 0.3
       self.cmd_vel_pub.publish(twist)
       return 'drive'
 
@@ -69,7 +69,7 @@ class Spin(smach.State):
     rospy.loginfo('Executing state Spin')
 
     if (rospy.Time.now() > userdata.spin_interupt_time):
-      userdata.state_interupt_out = rospy.Time.now() + rospy.Duration(30)
+      userdata.state_interupt_out = rospy.Time.now() + rospy.Duration(15)
       return 'stop_spin'
     else:
       twist = Twist()
