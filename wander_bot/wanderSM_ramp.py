@@ -65,7 +65,7 @@ class Drive(smach.State):
     self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
     self.scan_sub = rospy.Subscriber('scan', LaserScan, scan_callback)
     self.target_twist = Twist()
-    self.target_twist.linear.x = 0.3
+    self.target_twist.linear.x = 0.2
     self.last_twist_send_time = rospy.Time.now()
 
   def execute(self, userdata):
