@@ -11,7 +11,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 
 
-int 
+int
 main (int argc, char** argv)
 {
   // Read in the cloud data
@@ -75,8 +75,8 @@ main (int argc, char** argv)
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
   ec.setClusterTolerance (0.02); // 2cm
-  ec.setMinClusterSize (100);
-  ec.setMaxClusterSize (25000);
+  ec.setMinClusterSize (200);
+  ec.setMaxClusterSize (1000);
   ec.setSearchMethod (tree);
   ec.setInputCloud (cloud_filtered);
   ec.extract (cluster_indices);
