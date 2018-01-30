@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/malcolm/turtlebot_ws/src/follow_bot/devel/setup.sh
