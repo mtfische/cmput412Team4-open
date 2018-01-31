@@ -45,3 +45,8 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+# Cmake cache files:
+CMakeCache.txt
+CMakeFiles
+make
