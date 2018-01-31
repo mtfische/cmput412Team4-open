@@ -118,7 +118,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+# move_to_centroid
   ${catkin_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
 )
@@ -131,7 +131,9 @@ add_definitions(
 )
 
 add_executable (targeting_node find_target.cpp)
+add_executable (move_to_centroid_node move_to_centroid.cpp)
 target_link_libraries (targeting_node ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries (move_to_centroid_node ${PCL_LIBRARIES} ${catkin_LIBRARIES})
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/follow_bot.cpp
