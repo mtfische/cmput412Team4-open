@@ -11,12 +11,12 @@ msg/*Feedback.msg
 msg/*Goal.msg
 msg/*Result.msg
 msg/_*.py
-follow_bot/catkin/
-follow_bot/catkin_generated
-follow_bot/CMakeFiles
-follow_bot/devel
-follow_bot/gtest
-follow_bot/test_results
+**/catkin/
+**/catkin_generated
+**/CMakeFiles
+**/devel
+**/gtest
+**/test_results
 **/CMakeCache.txt
 **/*.cmake
 Makefile
@@ -54,3 +54,8 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+# Cmake cache files:
+CMakeCache.txt
+CMakeFiles
+make
