@@ -22,6 +22,7 @@ CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/pcl_msg
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/pcl_msgs/PointIndices.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/pcl_msgs/PolygonMesh.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/pcl_msgs/Vertices.h
+CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/pcl_ros/point_cloud.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/pcl_ros/transforms.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/ros/advertise_options.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /opt/ros/indigo/include/ros/advertise_service_options.h
@@ -369,9 +370,11 @@ CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/featur
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/features/impl/normal_3d.hpp
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/features/normal_3d.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/boost.h
+CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/crop_box.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/extract_indices.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/filter.h
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/filter_indices.h
+CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/impl/crop_box.hpp
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/impl/extract_indices.hpp
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/impl/filter.hpp
 CMakeFiles/targeting_node.dir/find_target.cpp.o: /usr/include/pcl-1.7/pcl/filters/impl/filter_indices.hpp

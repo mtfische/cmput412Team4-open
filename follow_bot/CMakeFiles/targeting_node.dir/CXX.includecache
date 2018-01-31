@@ -7,11 +7,17 @@
 #IncludeRegexTransform: 
 
 /home/malcolm/turtlebot_ws/src/follow_bot/find_target.cpp
+ctime
+-
+stdint.h
+-
 ros/ros.h
 -
 pcl/ros/conversions.h
 -
 sensor_msgs/PointCloud2.h
+-
+pcl_ros/point_cloud.h
 -
 pcl/ModelCoefficients.h
 -
@@ -44,6 +50,8 @@ pcl/common/centroid.h
 pcl_ros/transforms.h
 -
 pcl_conversions/pcl_conversions.h
+-
+pcl/filters/crop_box.h
 -
 
 /opt/ros/indigo/include/XmlRpcDecl.h
@@ -424,6 +432,26 @@ ros/serialization.h
 ros/builtin_message_traits.h
 -
 ros/message_operations.h
+-
+
+/opt/ros/indigo/include/pcl_ros/point_cloud.h
+ros/ros.h
+-
+pcl/point_cloud.h
+-
+pcl/point_traits.h
+-
+pcl/for_each_type.h
+-
+pcl/conversions.h
+-
+pcl_conversions/pcl_conversions.h
+-
+sensor_msgs/PointCloud2.h
+-
+boost/mpl/size.hpp
+-
+boost/ref.hpp
 -
 
 /opt/ros/indigo/include/pcl_ros/transforms.h
@@ -2998,6 +3026,18 @@ boost/function.hpp
 boost/optional.hpp
 -
 
+/usr/include/pcl-1.7/pcl/filters/crop_box.h
+pcl/point_types.h
+-
+pcl/filters/filter_indices.h
+-
+pcl/common/transforms.h
+-
+pcl/common/eigen.h
+-
+pcl/filters/impl/crop_box.hpp
+-
+
 /usr/include/pcl-1.7/pcl/filters/extract_indices.h
 pcl/filters/filter_indices.h
 -
@@ -3022,6 +3062,12 @@ pcl/filters/impl/filter.hpp
 pcl/filters/filter.h
 -
 pcl/filters/impl/filter_indices.hpp
+-
+
+/usr/include/pcl-1.7/pcl/filters/impl/crop_box.hpp
+pcl/filters/crop_box.h
+-
+pcl/common/io.h
 -
 
 /usr/include/pcl-1.7/pcl/filters/impl/extract_indices.hpp
