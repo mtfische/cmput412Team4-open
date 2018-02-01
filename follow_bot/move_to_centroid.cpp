@@ -20,6 +20,7 @@ void centroid_callback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg) {
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   //(*cloud).push_back(pcl::PointXYZ (1,1,1));
   pcl:computeCentroid(*msg, centroid);
+
   x = centroid.z;
   y = centroid.y;
   std::cout << "x: " << centroid.x << "\ny: " << centroid.y << "\nz: " << centroid.z << "\n\n\n";
@@ -32,7 +33,12 @@ int main(int argc, char **argv) {
   int k_alpha = 1;
   int k_beta = -1;
 
-  int stopMoving = true;
+  int stop_distance = 0.5;
+  int max_speed = 0.6;
+  int min_speed = 0.1;
+  int follow_distance = 1;
+
+  int stopMoving = false;
 
   /**
    * The ros::init() function needs to see argc and argv so that it can perform
@@ -71,11 +77,9 @@ int main(int argc, char **argv) {
    * buffer up before throwing some away.
    */
   ros::Publisher cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  ros::Subscriber centroid_sub = n.subscribe<pcl::PointCloud<pcl::PointXYZ> >("target_cluster", 1, centroid_callback);
+  ros::Subscriber centroid_sub = n.subscribe("target_cluster", 1, centroid_callback);
 
   ros::Rate rate(10);
-
-
   while (ros::ok()) {
     if (!stopMoving) {
       // Get centroid we are navigating to
@@ -83,10 +87,10 @@ int main(int argc, char **argv) {
 
       geometry_msgs::Twist vel_msg;
       // Calculate V
-      vel_msg.linear.x = 0.5 * sqrt(pow(x, 2) + pow(y, 2));
+      vel_msg.linear.x = (x - stop_distance);
 
       // Calculate omega (w)
-      vel_msg.angular.z = 4.0 * atan2(y, x);
+      vel_msg.angular.z = -y;
 
       // Publish Twist
       cmd_vel_pub.publish(vel_msg);
@@ -98,6 +102,7 @@ int main(int argc, char **argv) {
     // (*cloud).push_back(pcl::PointXYZ (3,3,3));
     // test_pub.publish(*cloud);
 
+    ros::spinOnce();
     rate.sleep();
   }
   return 0;
