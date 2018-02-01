@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
       }
 
       // Calculate omega (w)
-      vel_msg.angular.z = -z z_scale;
+      vel_msg.angular.z = -z * z_scale;
 
       // Publish Twist
       std::cout << "x: " << x << "\ny: " << y << "\ny: " << y << "\n";
