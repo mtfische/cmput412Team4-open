@@ -28,12 +28,13 @@ main (int argc, char** argv)
   vg.filter (*cloud_filtered);
   std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
 
+  pcl::PCDWriter writer;
+  
   // Create the segmentation object for the planar model and set all the parameters
   pcl::SACSegmentation<pcl::PointXYZ> seg;
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
-  pcl::PCDWriter writer;
   seg.setOptimizeCoefficients (true);
   seg.setModelType (pcl::SACMODEL_PLANE);
   seg.setMethodType (pcl::SAC_RANSAC);
@@ -68,6 +69,8 @@ main (int argc, char** argv)
     *cloud_filtered = *cloud_f;
   }
 
+  
+
   // Creating the KdTree object for the search method of the extraction
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   tree->setInputCloud (cloud_filtered);
@@ -85,15 +88,56 @@ main (int argc, char** argv)
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+    float min_x,min_y,max_x,max_y, z;
+    min_x = 10; min_y = 10; max_x = -10; max_y = -10;
     for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-      cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
+    {
+      cloud_cluster->points.push_back (cloud_filtered->points[*pit]);
+      z = cloud_filtered->points[*pit].z;
+      if(min_x > cloud_filtered->points[*pit].x)
+        min_x = cloud_filtered->points[*pit].x;
+      if(max_x < cloud_filtered->points[*pit].x)
+        max_x = cloud_filtered->points[*pit].x;
+      if(min_y > cloud_filtered->points[*pit].y)
+        min_y = cloud_filtered->points[*pit].y;
+      if(max_y < cloud_filtered->points[*pit].y)
+        max_y = cloud_filtered->points[*pit].y;
+    }
+    //for (std::vector<pcl_po>; cloud_cluster.begin (); )
+    //std::cout << "min_x: " << min_x << " min_y: "<<min_y<< " max_x: "<<max_x<< " max_y: "<<max_y <<std::endl;
+    //std::cout << "height: " << max_y-min_y << " width: " << max_x-min_x <<std::endl; 
+    //std::cout << "The height of the cluster: " << << " Total width: "<< <<std::endl;
+    bool reject = false;
+    if(z > 6){
+      //std::cout << "rejecting cluster due to distance!" <<std::endl; 
+      continue;
+    }
+    if(max_y-min_y < 0.05 || max_y-min_y > 0.25)
+      {
+        std::cout << "rejecting cluster due to height!" <<std::endl; 
+        reject = true;
+        //continue;
+      }
+    if(max_x-min_x < 0.1 || max_x-min_x > 0.4)
+      {
+        std::cout << "rejecting cluster due to width!" <<std::endl; 
+        reject = true;
+        //continue;
+      }
+    std::cout << "min_x: " << min_x << " min_y: "<<min_y<< " max_x: "<<max_x<< " max_y: "<<max_y <<std::endl;
+    std::cout << "height: " << max_y-min_y << " width: " << max_x-min_x <<std::endl; 
     cloud_cluster->width = cloud_cluster->points.size ();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
 
     std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
     std::stringstream ss;
-    ss << "cloud_cluster_" << j << ".pcd";
+    if(reject){
+      ss << "rejected_cluster_" << j << ".pcd";  
+    }else{
+      ss << "cloud_cluster_" << j << ".pcd";  
+    }
+    //ss << "cloud_cluster_" << j << ".pcd";
     writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
     j++;
   }
