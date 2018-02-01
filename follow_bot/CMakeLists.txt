@@ -132,8 +132,10 @@ add_definitions(
 
 add_executable (targeting_node find_target.cpp)
 add_executable (move_to_centroid_node move_to_centroid.cpp)
+add_executable (targeting_node_sim find_target_sim.cpp)
 target_link_libraries (targeting_node ${PCL_LIBRARIES} ${catkin_LIBRARIES})
 target_link_libraries (move_to_centroid_node ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries (targeting_node_sim ${PCL_LIBRARIES} ${catkin_LIBRARIES})
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/follow_bot.cpp

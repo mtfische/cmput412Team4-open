@@ -10,11 +10,12 @@
 // Respective to robot, not centroid
 float x = 0;
 float y = 0;
+float z = 0;
 
 void centroid_callback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg) {
   // centroid: x=l/r, y=u/d, z:distance
   // Robot: x=foreward, y=l/r, z=u/d
-  // centroid z = robot x, centroid y = robot y
+  // centroid z = robot x, centroid y = robot y, centroid x = robot z
 
   pcl::PointXYZ centroid;
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -23,20 +24,15 @@ void centroid_callback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg) {
 
   x = centroid.z;
   y = centroid.y;
-  std::cout << "x: " << centroid.x << "\ny: " << centroid.y << "\nz: " << centroid.z << "\n\n\n";
+  z = centroid.x;
 }
 
 int main(int argc, char **argv) {
   // Constants (magic numbers):
-  int k_p = 1;
-  int k_d = 1;
-  int k_alpha = 1;
-  int k_beta = -1;
+  int stop_distance = 1;
+  int x_scale = 0.5;
+  int z_scale = 0.5;
 
-  int stop_distance = 0.5;
-  int max_speed = 0.6;
-  int min_speed = 0.1;
-  int follow_distance = 1;
 
   int stopMoving = false;
 
@@ -87,12 +83,16 @@ int main(int argc, char **argv) {
 
       geometry_msgs::Twist vel_msg;
       // Calculate V
-      vel_msg.linear.x = (x - stop_distance);
+      if(x != 0) {
+        vel_msg.linear.x = (x - stop_distance) * x_scale;
+      }
 
       // Calculate omega (w)
-      vel_msg.angular.z = -y;
+      vel_msg.angular.z = -z z_scale;
 
       // Publish Twist
+      std::cout << "x: " << x << "\ny: " << y << "\ny: " << y << "\n";
+      std::cout << "linear x: " << vel_msg.linear.x << "\nangular z: " << vel_msg.angular.z << "\n\n\n";
       cmd_vel_pub.publish(vel_msg);
 
     }
