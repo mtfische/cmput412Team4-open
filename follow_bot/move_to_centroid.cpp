@@ -24,7 +24,7 @@ void centroid_callback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg) {
   pcl::PointXYZ centroid;
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   //(*cloud).push_back(pcl::PointXYZ (1,1,1));
-  pcl:computeCentroid(*msg, centroid);
+  pcl::computeCentroid(*msg, centroid);
 
   x = centroid.z;
   y = centroid.y;
@@ -42,10 +42,10 @@ void killswitch_callback(const sensor_msgs::Joy::ConstPtr & msg) {
 int main(int argc, char **argv) {
   // Constants (magic numbers):
   float stop_distance = 1;
-  float x_scale = 0.2;
-  float z_scale = 0.2;
-  float x_threshold = 0.003;
-  float z_threshold = 0.003;
+  float x_scale = 1;
+  float z_scale = 5;
+  float x_threshold = 0.008;
+  float z_threshold = 0.008;
 
   /**
    * The ros::init() function needs to see argc and argv so that it can perform
@@ -58,7 +58,6 @@ int main(int argc, char **argv) {
    * part of the ROS system.
    */
   ros::init(argc, argv, "move_to_centroid");
-
   /**
    * NodeHandle is the main access point to communications with the ROS system.
    * The first NodeHandle constructed will fully initialize this node, and the last
@@ -96,27 +95,29 @@ int main(int argc, char **argv) {
       geometry_msgs::Twist vel_msg;
       // Calculate V
       if(x != 0) {
-        if(abs(x- stop_distance) * x_scale > x_threshold) {
+        if(abs((x - stop_distance)* 1000 * x_scale) > x_threshold*1000) {
           vel_msg.linear.x = (x - stop_distance) * x_scale;
         }
       }
-      else {
+      //else {
         // stop
-        vel_msg.linear.x = 0;
-      }
+        //vel_msg.linear.x = 0;
+      //}
 
       // Calculate omega (w)
-      if(abs(z) * z_scale > z_threshold ) {
+      if(abs(z*1000) * z_scale > z_threshold*1000 ) {
         vel_msg.angular.z = -z * z_scale;
       }
-      else {
+      //else {
         // stop
-        vel_msg.angular.z = 0;
-      }
+        //vel_msg.angular.z = 0;
+      //}
 
       // Publish Twist
       std::cout << "x: " << x << "\ny: " << y << "\nz: " << z << "\n";
-      std::cout << "linear x: " << vel_msg.linear.x << "\nangular z: " << vel_msg.angular.z << "\n\n\n";
+      std::cout << "linear x: " << vel_msg.linear.x << "\nangular z: " << vel_msg.angular.z << "\n";
+      std::cout << "x mult: " << x_scale << "\nz mult z: " << z_scale << "\n";
+      std::cout << "abs x - stop: " << (x - stop_distance) * x_scale << "\n\n\n";
       cmd_vel_pub.publish(vel_msg);
 
     }

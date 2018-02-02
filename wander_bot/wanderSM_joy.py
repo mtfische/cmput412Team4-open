@@ -1,0 +1,129 @@
+#!/usr/bin/env python
+import rospy
+import math
+from sensor_msgs.msg import LaserScan
+from std_msgs.msg import String
+from geometry_msgs.msg import Twist
+from sensor_msgs.msg import Joy
+import random
+import smach
+import smach_ros
+
+drive_switch = False
+
+def scan_callback(msg):
+  global g_range_ahead
+  #rospy.loginfo("The min scan = %f" % min(msg.ranges))
+  #rospy.loginfo("The middle scan = %f" % msg.ranges[len(msg.ranges)/2])
+  ranges = strip_nans(msg.ranges[163:477])
+
+  #print(ranges)
+
+  #rospy.loginfo("interested ranges: " + str(ranges))
+  if len(ranges) == 0:
+    g_range_ahead = 10
+  else:
+    g_range_ahead =  min(ranges) # msg.ranges[len(msg.ranges)/2]
+
+def strip_nans(ranges):
+  stripped_ranges = []
+  for item in ranges:
+      if not math.isnan(item):
+          stripped_ranges.append(item)
+  return stripped_ranges
+
+def joy_callback(msg):
+    print(msg)
+    print(msg.buttons)
+    global drive_switch
+    if(msg.buttons[2] == 1):
+        drive_switch = True
+    elif(msg.buttons[1] == 1):
+        drive_switch = False
+    print (drive_switch)
+
+#input time to drive for
+#if time elapses or an obstical is in front of us
+#change state to spin
+class Drive(smach.State):
+  def __init__(self):
+    smach.State.__init__(self, outcomes=['stop_drive','drive'],
+                               input_keys=['drive_interupt_time'],
+                               output_keys=['state_interupt_out'])
+    self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+    self.scan_sub = rospy.Subscriber('scan', LaserScan, scan_callback)
+    self.scan_sub = rospy.Subscriber('joy', Joy, joy_callback)
+
+  def execute(self, userdata):
+    rospy.sleep(.1)
+    rospy.loginfo('Executing state Drive')
+
+    if (g_range_ahead < 1.0 or rospy.Time.now() > userdata.drive_interupt_time):
+      rospy.loginfo('Stop driving')
+      userdata.state_interupt_out = rospy.Time.now() + rospy.Duration(3)
+      return 'stop_drive'
+    else:
+      twist = Twist()
+      twist.linear.x = 0.5
+      global drive_switch
+      if drive_switch:
+        self.cmd_vel_pub.publish(twist)
+      return 'drive'
+
+#input time to spin for
+#if time elapses
+#change state to drive
+class Spin(smach.State):
+  def __init__(self):
+    smach.State.__init__(self, outcomes=['stop_spin','spin'],
+                               input_keys=['spin_interupt_time'],
+                               output_keys=['state_interupt_out'])
+    self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+
+  def execute(self, userdata):
+    rospy.sleep(.1)
+    rospy.loginfo('Executing state Spin')
+
+    if (rospy.Time.now() > userdata.spin_interupt_time):
+      userdata.state_interupt_out = rospy.Time.now() + rospy.Duration(15)
+      return 'stop_spin'
+    else:
+      twist = Twist()
+      twist.angular.z = 0.7
+      global drive_switch
+      if drive_switch:
+          self.cmd_vel_pub.publish(twist)
+      return 'spin'
+
+
+
+def main():
+  rospy.init_node("WanderSM")
+  sm = smach.StateMachine(outcomes=['outcome4'])
+  sm.userdata.state_interupt_time = rospy.Time.now()
+
+  global g_range_ahead
+  g_range_ahead = 2
+
+  with sm:
+    smach.StateMachine.add("Drive", Drive(),
+                           transitions={'stop_drive':'Spin', 'drive':'Drive'},
+                           remapping={'drive_interupt_time':'state_interupt_time',
+                                      'state_interupt_out':'state_interupt_time'})
+    smach.StateMachine.add('Spin', Spin(),
+                           transitions={'stop_spin':'Drive', 'spin':'Spin'},
+                           remapping={'spin_interupt_time':'state_interupt_time',
+                                      'state_interupt_out':'state_interupt_time'})
+
+  sis = smach_ros.IntrospectionServer('smach_Server', sm, '/SM_ROOT')
+  sis.start()
+
+  # Execute the state machine
+  outcome = sm.execute()
+
+  # Wait for ctrl-c to stop the application
+  rospy.spin()
+  sis.stop()
+
+if __name__ == '__main__':
+  main()
