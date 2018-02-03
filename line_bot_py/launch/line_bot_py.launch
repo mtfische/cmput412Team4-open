@@ -1,0 +1,5 @@
+<launch>
+  <node name="line_follow" pkg="line_bot_py" type="line_follower.py">
+    <remap from="cmd_vel" to="cmd_vel_mux/input/teleop" />
+  </node>
+</launch>
