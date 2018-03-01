@@ -1,6 +1,6 @@
 <launch>
-  <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch" />
-  <node name="line_follow" pkg="line_bot_py" type="line_follower.py">
+  <include file="$(find gazebo_course)/course.launch" />
+  <node name="line_follow" pkg="line_bot_py" type="line_follower">
     <remap from="cmd_vel" to="cmd_vel_mux/input/teleop" />
   </node>
 </launch>

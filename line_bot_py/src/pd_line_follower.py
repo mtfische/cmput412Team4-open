@@ -28,6 +28,13 @@ class Follower:
 
                 self.twist = Twist()
 
+                # PD controller vars.
+                self.err = 0
+                self.lastErr = 0
+                self.Kp = -0.003
+                self.Kd = -0.01
+
+
         def image_callback(self, msg):
 
                 image = self.bridge.imgmsg_to_cv2(msg,desired_encoding='bgr8')
@@ -49,10 +56,12 @@ class Follower:
                         cv2.circle(image, (cx, cy), 20, (0,0,255), -1)
 #The proportional controller is implemented in the following four lines which
 #is reposible of linear scaling of an error to drive the control output.
-                        err = cx - w/2
+                        self.lastErr = float(self.err)
+                        self.err = float(cx - w/2)
                         self.twist.linear.x = 1.0
-                        self.twist.angular.z = -float(err*.3) / 100
+                        self.twist.angular.z = (float(self.Kp) * float(self.err)) + (float(self.Kd) * (float(self.err) - float(self.lastErr)))
                         self.cmd_vel_pub.publish(self.twist)
+                        #print("P: " + str((float(self.Kp) * float(self.err))) + " D: " + str((float(self.Kd) * (float(self.err) - float(self.lastErr)))))
                 cv2.imshow("window", image)
                 cv2.waitKey(3)
 

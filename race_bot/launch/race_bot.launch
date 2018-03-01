@@ -1,0 +1,8 @@
+<launch>
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch" />
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch" />
+  <node pkg="joy" type="joy_node" name="joystick"/>
+  <node name="race_bot" pkg="race_bot" type="race_bot.py" output="screen">
+    <remap from="cmd_vel" to="cmd_vel_mux/input/teleop" />
+  </node>
+</launch>

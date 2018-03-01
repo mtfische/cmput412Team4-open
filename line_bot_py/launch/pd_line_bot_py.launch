@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find turtlebot_teleop)/launch/includes/velocity_smoother.launch.xml"/>
+  <node name="line_follower" pkg="line_bot_py" type="pd_line_follower.py">
+    <remap from="cmd_vel" to="teleop_velocity_smoother/raw_cmd_vel" />
+  </node>
+</launch>

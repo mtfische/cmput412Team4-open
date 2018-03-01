@@ -52,7 +52,7 @@ class Drive(smach.State):
                                output_keys=['state_interupt_out'])
     self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
     self.scan_sub = rospy.Subscriber('scan', LaserScan, scan_callback)
-    self.scan_sub = rospy.Subscriber('joy', Joy, joy_callback)
+    self.joy_sub = rospy.Subscriber('joy', Joy, joy_callback)
 
   def execute(self, userdata):
     rospy.sleep(.1)
