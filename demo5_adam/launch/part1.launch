@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch" />
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch" />
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="/camera/rgb/"/>
+  <node name="part1" pkg="demo5_adam" type="part1.py" output="screen"/>
+</launch>

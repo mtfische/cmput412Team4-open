@@ -1,0 +1,5 @@
+set the lskip to 5 to reduce some of the computational load
+set the minimum match score to 15 so that less matching points were not merged, this is the as the stage was so similar it would have false matches quite frequently.
+upped the particles to 75, this seems to have increased the resolution of the map produced at the expense of computational load. 
+decreased linear and angular update to 0.3 to decrease the distance that the robot had to move before it updated the map
+set maxUrange to 5 as anything more than that is unreliable on a turtlebot.

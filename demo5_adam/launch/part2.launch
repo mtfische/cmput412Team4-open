@@ -1,0 +1,8 @@
+<launch>
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch" />
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch" />
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="/camera/rgb/"/>
+  <node name="part2" pkg="demo5_adam" type="part2.py" output="screen">
+    <remap from="cmd_vel" to="cmd_vel_mux/input/teleop" />
+  </node>
+</launch>
