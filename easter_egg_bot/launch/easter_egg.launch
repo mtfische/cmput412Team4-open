@@ -1,0 +1,59 @@
+<launch>
+  <!--> Turtlebot Minimal <-->
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch" />
+
+  <!--> 3dsensor <-->
+  <arg name="3d_sensor" default="$(env TURTLEBOT_3D_SENSOR)"/>  <!-- r200, kinect, asus_xtion_pro -->
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
+
+  <!--> Joystick <-->
+  <!-- <node pkg="joy" type="joy_node" name="joystick"/> -->
+
+  <!--> Map Server <-->
+  <arg name="map_file" default="$(find easter_egg_bot)/map/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!--> AMCL <-->
+  <arg name="custom_amcl_launch_file" default="$( find easter_egg_bot)/launch/custom_amcl.launch.xml"/>
+  <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_a" default="0.0"/>
+  <include file="$(arg custom_amcl_launch_file)">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+  <!-- Move base -->
+  <arg name="custom_param_file" default="$(find turtlebot_navigation)/param/$(arg 3d_sensor)_costmap_params.yaml"/>
+  <include file="$(find easter_egg_bot)/launch/custom_move_base.launch.xml">
+    <arg name="custom_param_file" value="$(arg custom_param_file)"/>
+  </include>
+
+  <!--> easter_egg_bot <-->
+  <include file="$(find turtlebot_teleop)/launch/includes/velocity_smoother.launch.xml"/>
+  <node name="easter_egg_bot" pkg="easter_egg_bot" type="state_machine.py" output="screen">
+    <remap from="cmd_vel" to="teleop_velocity_smoother/raw_cmd_vel" />
+  </node>
+
+   <!--> USB Cam <-->
+  <node name="cv_camera" pkg="cv_camera" type="cv_camera_node">
+    <param name="cv_camera/device_id" value="1"/>
+  </node>
+  <!--> Sound Node <-->
+  <node name="soundplay_node" pkg="sound_play" type="soundplay_node.py"/>
+
+ <!--Ar_track_Alvar-->
+  <arg name="marker_size" default="4.4" />
+	<arg name="max_new_marker_error" default="0.08" />
+	<arg name="max_track_error" default="0.2" />
+
+	<arg name="cam_image_topic" default="/cv_camera/image_raw" />
+	<arg name="cam_info_topic" default="/cv_camera/camera_info" />
+	<arg name="output_frame" default="/camera" />
+
+	<node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" />
+
+  <node name="AR_finder" pkg="easter_egg_bot" type="AR_finder.py" output="screen" respawn="false"/>
+
+</launch>

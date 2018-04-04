@@ -12,6 +12,9 @@ rosparam set /slam_gmapping/xmin -5
 rosparam set /slam_gmapping/ymax 5
 rosparam set /slam_gmapping/ymin -5
 rosparam set /slam_gmapping/map_update_interval 1
+<<<<<<< Updated upstream
 rosparam set /slam_gmapping/maxUrange 10
 rosparam set /slam_gmapping/lsigma 0.025
 rosparam set /slam_gmapping/sigma 0.025
+=======
+>>>>>>> Stashed changes

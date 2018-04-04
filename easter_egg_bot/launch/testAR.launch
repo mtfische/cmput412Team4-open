@@ -1,0 +1,20 @@
+<launch>
+  <!--> USB Cam <-->
+ <node name="cv_camera" pkg="cv_camera" type="cv_camera_node">
+   <param name="cv_camera/device_id" value="1"/>
+ </node>
+
+ <!--Ar_track_Alvar-->
+ <arg name="marker_size" default="4.4" />
+ <arg name="max_new_marker_error" default="0.08" />
+ <arg name="max_track_error" default="0.2" />
+
+ <arg name="cam_image_topic" default="/cv_camera/image_raw" />
+ <arg name="cam_info_topic" default="/cv_camera/camera_info" />
+ <arg name="output_frame" default="/camera" />
+
+ <node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" />
+
+ <node name="AR_finder" pkg="easter_egg_bot" type="AR_finder.py" output="screen" respawn="false"/>
+
+</launch>

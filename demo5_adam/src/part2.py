@@ -18,6 +18,10 @@ class ShowImage:
 
         self.twist = Twist()
 
+	#1 = left 2 = center 3 = right
+	self.start = 0
+
+
         # Speed Vars
         self.cruiseSpeed = 0.1
         self.ramp_rate = 0.1
@@ -32,7 +36,7 @@ class ShowImage:
         self.Kd = -0.01
 
         self.image_sub = rospy.Subscriber('camera/rgb/image_rect_color',Image, self.image_callback)
-        self.image_info_sub = rospy.Subscriber('/camera/rgb/image_proc_resize/camera_info', CameraInfo, self.camera_info_callback)
+        self.image_info_sub = rospy.Subscriber('/camera/rgb/camera_info', CameraInfo, self.camera_info_callback)
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
 
         self.camera_matrix = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -81,65 +85,52 @@ class ShowImage:
 
         # If found, add object points, image points (after refining them)
         if ret == True:
-            #corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
-            cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
+		#corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
+		cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
 
-            # Find the rotation and translation vectors.
-            #rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, corners2, self.camera_matrix, self.camera_dist)
-            rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, corners, self.camera_matrix, self.camera_dist)
+		# Find the rotation and translation vectors.
+		#rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, corners2, self.camera_matrix, self.camera_dist)
+		rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, corners, self.camera_matrix, self.camera_dist)
 
-            # project 3D points to image plane
-            imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, self.camera_matrix, self.camera_dist)
+		# project 3D points to image plane
+		imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, self.camera_matrix, self.camera_dist)
 
-            if self.DrawImage:
-                self.draw(image,corners,imgpts)
+		if self.DrawImage:
+			self.draw(image,corners,imgpts)
 
-            #print(rvecs)
+		translation = tvecs.reshape(1,3)
+		rotation = rvecs.reshape(1,3)
+		print(tvecs.reshape(1,3))
+		print(rvecs.reshape(1,3))
+		if(self.start == 0):
+			if(rotation[0][0] > 0):
+				print("rot left Side")
+			elif(rotation[0][0] < 0):
+				print("rot Right Side")
+			else:
+				print("center")
 
-            #Modified from https://github.com/n17r4m/kobuki/blob/master/demo5/src/docker.py
-            horiz = 0
-            if (rvecs[2])[0] > 0:
-                horiz = (tvecs[0])[0] - 6
-            elif (rvecs[2])[0] < 0:
-                horiz = (tvecs[0])[0] + 6
 
-            h, w, d = image.shape
-            print("((imgpts[0])[0])[0]: " + str(((imgpts[0])[0])[0]) + " w/2: " + str(w/2))
-            print("T: " + str(tvecs.reshape(1,3)))
-            print("R: " + str(rvecs.reshape(1,3)))
+		if (tvecs[2])[0] > 13:
+			self.last_x_vel = self.twist.linear.x
+			self.twist.linear.x = self.ramped_vel( self.last_x_vel, self.cruiseSpeed, self.last_send_time, rospy.Time.now())
+		if (tvecs[2])[0] < 13:
+			self.last_x_vel = self.twist.linear.x
+			self.twist.linear.x = self.ramped_vel( self.last_x_vel, 0, self.last_send_time, rospy.Time.now())
 
-            offset = 0
-            if (rvecs[2])[0] < 0:
-                offset = 20
-            elif (rvecs[2])[0] > 0:
-                offset = -20
+		#print(self.twist)
 
-            z = 0
-            if ((imgpts[0])[0])[0] < (w/2 + offset):
-                z = 0.2
-            elif ((imgpts[0])[0])[0] > (w/2 + offset):
-                z = -0.2
+		if self.Drive:
+			self.cmd_vel_pub.publish(self.twist)
+			self.last_send_time = rospy.Time.now()
 
-            x = 0
-            if (tvecs[2])[0] > 14:
-                x = 0.2
-
-            self.twist.angular.z = (3*self.twist.angular.z + z) / 4
-            self.twist.linear.x = (3*self.twist.linear.x + x) / 4
-
-            print(self.twist)
-
-            if self.Drive:
-                self.cmd_vel_pub.publish(self.twist)
-                self.last_send_time = rospy.Time.now()
-
-        # Show Debug information in window
-        if self.DrawImage and self.FrameSkipRate == self.frame:
-            cv2.imshow("image", image)
-            cv2.waitKey(3)
-            self.frame = 0
-        else:
-            self.frame = self.frame + 1
+		# Show Debug information in window
+		if self.DrawImage and self.FrameSkipRate == self.frame:
+		    cv2.imshow("image", image)
+		    cv2.waitKey(3)
+		    self.frame = 0
+		else:
+		    self.frame = self.frame + 1
 
 rospy.init_node('part1')
 showImage = ShowImage()
