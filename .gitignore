@@ -60,5 +60,5 @@ CMakeCache.txt
 CMakeFiles
 make
 
-# ROS bag files
+# ROS Bag files
 *.bag

@@ -1,0 +1,15 @@
+<launch>
+  <!--> Turtlebot Minimal <-->
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch" />
+
+  <!--> 3dsensor <-->
+  <arg name="3d_sensor" default="$(env TURTLEBOT_3D_SENSOR)"/>  <!-- r200, kinect, asus_xtion_pro -->
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
+
+ 
+  <!-- Person Detector -->
+  <node name='guardbot_person_detector' pkg='guardbot' type='detector.py' output='screen' />
+
+ 
+
+</launch>

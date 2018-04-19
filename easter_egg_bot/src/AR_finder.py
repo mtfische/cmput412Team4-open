@@ -16,7 +16,7 @@ class ShowAR:
             if(msg.markers[i].id != 4):
                 return
             if(msg.markers[i].pose.pose.position.x < 0.1 and msg.markers[i].pose.pose.position.x> -0.1):
-                print("marker found")
+                #print("marker found")
                 if(rospy.Time.now() >= self.timeout):
                     #publish
                     print("Tag Found:", msg.markers[i].id)
